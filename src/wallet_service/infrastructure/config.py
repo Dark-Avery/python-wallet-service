@@ -21,13 +21,20 @@ class Settings:
     @property
     def sqlalchemy_database_url(self) -> str:
         if self.database_url:
-            return self.database_url
+            url = self.database_url
+        else:
+            encoded_password = quote_plus(self.db_password)
+            url = (
+                f"{self.db_driver}://{self.db_user}:{encoded_password}"
+                f"@{self.db_host}:{self.db_port}/{self.db_name}"
+            )
 
-        encoded_password = quote_plus(self.db_password)
-        return (
-            f"{self.db_driver}://{self.db_user}:{encoded_password}"
-            f"@{self.db_host}:{self.db_port}/{self.db_name}"
-        )
+        if not url.startswith("postgresql+asyncpg://"):
+            raise ValueError(
+                "Wallet service supports only PostgreSQL URLs with the asyncpg driver."
+            )
+
+        return url
 
 
 @lru_cache(maxsize=1)
