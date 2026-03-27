@@ -10,7 +10,7 @@ from wallet_service.infrastructure.config import get_settings
 @lru_cache(maxsize=1)
 def get_engine() -> AsyncEngine:
     settings = get_settings()
-    return create_async_engine(settings.database_url, future=True)
+    return create_async_engine(settings.sqlalchemy_database_url, future=True, pool_pre_ping=True)
 
 
 @lru_cache(maxsize=1)
