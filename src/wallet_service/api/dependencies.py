@@ -4,7 +4,9 @@ from functools import lru_cache
 
 from wallet_service.application.contracts import WalletRepository
 from wallet_service.application.services import WalletService
-from wallet_service.infrastructure.db.repositories import SQLAlchemyWalletRepository
+from wallet_service.infrastructure.db.repositories import (
+    SQLAlchemyWalletRepository,
+)
 from wallet_service.infrastructure.db.session import get_session_factory
 
 

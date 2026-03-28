@@ -14,4 +14,3 @@ class OperationType(StrEnum):
 class Wallet:
     wallet_uuid: UUID
     balance: int
-

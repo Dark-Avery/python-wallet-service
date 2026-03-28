@@ -11,7 +11,11 @@ from starlette.status import HTTP_200_OK, HTTP_409_CONFLICT
 from wallet_service.main import create_app
 
 
-async def _insert_wallet(database_url: str, wallet_uuid: UUID, balance: int) -> None:
+async def _insert_wallet(
+    database_url: str,
+    wallet_uuid: UUID,
+    balance: int,
+) -> None:
     connection = await asyncpg.connect(database_url)
     try:
         await connection.execute(
@@ -67,7 +71,10 @@ async def test_concurrent_deposits_to_new_wallet_preserve_total_balance(
         ]
     )
 
-    assert all(response.status_code == HTTP_200_OK for _, response in responses)
+    assert all(
+        response.status_code == HTTP_200_OK
+        for _, response in responses
+    )
     assert await _fetch_balance(postgres_direct_url, wallet_uuid) == (
         deposit_count * deposit_amount
     )
@@ -91,7 +98,10 @@ async def test_concurrent_withdrawals_never_overdraw_wallet(
         ]
     )
 
-    success_count = sum(response.status_code == HTTP_200_OK for _, response in responses)
+    success_count = sum(
+        response.status_code == HTTP_200_OK
+        for _, response in responses
+    )
     conflict_count = sum(
         response.status_code == HTTP_409_CONFLICT for _, response in responses
     )
@@ -115,8 +125,14 @@ async def test_mixed_concurrent_operations_keep_balance_consistent(
     await _insert_wallet(postgres_direct_url, wallet_uuid, initial_balance)
 
     responses = await asyncio.gather(
-        *[_post_operation(wallet_uuid, "DEPOSIT", deposit_amount) for _ in range(5)],
-        *[_post_operation(wallet_uuid, "WITHDRAW", withdraw_amount) for _ in range(8)],
+        *[
+            _post_operation(wallet_uuid, "DEPOSIT", deposit_amount)
+            for _ in range(5)
+        ],
+        *[
+            _post_operation(wallet_uuid, "WITHDRAW", withdraw_amount)
+            for _ in range(8)
+        ],
     )
 
     success_deposits = sum(

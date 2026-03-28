@@ -1,2 +1,1 @@
 """Wallet service package."""
-

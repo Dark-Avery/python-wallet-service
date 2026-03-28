@@ -29,11 +29,14 @@ async def apply_wallet_operation(
     return WalletResponse.model_validate(wallet)
 
 
-@router.get("/{wallet_uuid}", response_model=WalletResponse, status_code=status.HTTP_200_OK)
+@router.get(
+    "/{wallet_uuid}",
+    response_model=WalletResponse,
+    status_code=status.HTTP_200_OK,
+)
 async def get_wallet(
     wallet_uuid: UUID,
     service: WalletService = Depends(get_wallet_service),
 ) -> WalletResponse:
     wallet = await service.get_wallet(wallet_uuid)
     return WalletResponse.model_validate(wallet)
-

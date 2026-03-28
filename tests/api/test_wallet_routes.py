@@ -25,8 +25,10 @@ def app(store: dict[UUID, int]):
         return FakeWalletRepository(store)
 
     application = create_app()
-    application.dependency_overrides[get_wallet_service] = lambda: WalletService(
-        repository_factory=repository_factory
+    application.dependency_overrides[get_wallet_service] = (
+        lambda: WalletService(
+            repository_factory=repository_factory,
+        )
     )
     return application
 
@@ -41,7 +43,10 @@ async def client(app):
 
 
 @pytest.mark.asyncio
-async def test_post_operation_returns_updated_wallet(client: AsyncClient, store: dict[UUID, int]) -> None:
+async def test_post_operation_returns_updated_wallet(
+    client: AsyncClient,
+    store: dict[UUID, int],
+) -> None:
     wallet_uuid = uuid4()
 
     response = await client.post(
@@ -55,7 +60,10 @@ async def test_post_operation_returns_updated_wallet(client: AsyncClient, store:
 
 
 @pytest.mark.asyncio
-async def test_get_wallet_returns_balance(client: AsyncClient, store: dict[UUID, int]) -> None:
+async def test_get_wallet_returns_balance(
+    client: AsyncClient,
+    store: dict[UUID, int],
+) -> None:
     wallet_uuid = uuid4()
     store[wallet_uuid] = 310
 
@@ -73,7 +81,10 @@ async def test_get_missing_wallet_returns_404(client: AsyncClient) -> None:
 
 
 @pytest.mark.asyncio
-async def test_withdraw_returns_updated_wallet(client: AsyncClient, store: dict[UUID, int]) -> None:
+async def test_withdraw_returns_updated_wallet(
+    client: AsyncClient,
+    store: dict[UUID, int],
+) -> None:
     wallet_uuid = uuid4()
     store[wallet_uuid] = 200
 
@@ -88,7 +99,9 @@ async def test_withdraw_returns_updated_wallet(client: AsyncClient, store: dict[
 
 
 @pytest.mark.asyncio
-async def test_withdraw_missing_wallet_returns_404(client: AsyncClient) -> None:
+async def test_withdraw_missing_wallet_returns_404(
+    client: AsyncClient,
+) -> None:
     response = await client.post(
         f"/api/v1/wallets/{uuid4()}/operation",
         json={"operation_type": "WITHDRAW", "amount": 100},
@@ -115,7 +128,9 @@ async def test_withdraw_with_insufficient_funds_returns_409(
 
 
 @pytest.mark.asyncio
-async def test_post_operation_rejects_invalid_operation_type(client: AsyncClient) -> None:
+async def test_post_operation_rejects_invalid_operation_type(
+    client: AsyncClient,
+) -> None:
     response = await client.post(
         f"/api/v1/wallets/{uuid4()}/operation",
         json={"operation_type": "TRANSFER", "amount": 100},
@@ -139,7 +154,9 @@ async def test_post_operation_rejects_non_positive_amount(
 
 
 @pytest.mark.asyncio
-async def test_invalid_wallet_uuid_returns_422(client: AsyncClient) -> None:
+async def test_invalid_wallet_uuid_returns_422(
+    client: AsyncClient,
+) -> None:
     response = await client.get("/api/v1/wallets/not-a-uuid")
 
     assert response.status_code == 422

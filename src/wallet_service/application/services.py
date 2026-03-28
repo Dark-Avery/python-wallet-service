@@ -34,14 +34,18 @@ class WalletService:
 
         async with self._repository_factory() as repository:
             if operation_type is OperationType.DEPOSIT:
-                updated_wallet = await repository.deposit(wallet_uuid, amount=amount)
+                updated_wallet = await repository.deposit(
+                    wallet_uuid,
+                    amount=amount,
+                )
                 await repository.commit()
                 return updated_wallet
 
             wallet = await repository.get(wallet_uuid, for_update=True)
 
             if wallet is None:
-                raise WalletNotFoundError(f"Wallet {wallet_uuid} was not found.")
+                raise WalletNotFoundError(
+                    f"Wallet {wallet_uuid} was not found.")
 
             if wallet.balance < amount:
                 raise InsufficientFundsError(

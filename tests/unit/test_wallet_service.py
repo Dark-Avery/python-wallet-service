@@ -19,7 +19,10 @@ def build_service(store: dict | None = None) -> tuple[WalletService, dict]:
     def repository_factory() -> FakeWalletRepository:
         return FakeWalletRepository(repository_store)
 
-    return WalletService(repository_factory=repository_factory), repository_store
+    return (
+        WalletService(repository_factory=repository_factory),
+        repository_store,
+    )
 
 
 @pytest.mark.asyncio
@@ -27,7 +30,11 @@ async def test_deposit_creates_new_wallet() -> None:
     service, store = build_service()
     wallet_uuid = uuid4()
 
-    wallet = await service.apply_operation(wallet_uuid, OperationType.DEPOSIT, 100)
+    wallet = await service.apply_operation(
+        wallet_uuid,
+        OperationType.DEPOSIT,
+        100,
+    )
 
     assert wallet.balance == 100
     assert store[wallet_uuid] == 100
@@ -38,7 +45,11 @@ async def test_deposit_updates_existing_wallet() -> None:
     wallet_uuid = uuid4()
     service, store = build_service({wallet_uuid: 150})
 
-    wallet = await service.apply_operation(wallet_uuid, OperationType.DEPOSIT, 50)
+    wallet = await service.apply_operation(
+        wallet_uuid,
+        OperationType.DEPOSIT,
+        50,
+    )
 
     assert wallet.balance == 200
     assert store[wallet_uuid] == 200
@@ -49,7 +60,11 @@ async def test_withdraw_reduces_balance() -> None:
     wallet_uuid = uuid4()
     service, store = build_service({wallet_uuid: 150})
 
-    wallet = await service.apply_operation(wallet_uuid, OperationType.WITHDRAW, 40)
+    wallet = await service.apply_operation(
+        wallet_uuid,
+        OperationType.WITHDRAW,
+        40,
+    )
 
     assert wallet.balance == 110
     assert store[wallet_uuid] == 110
@@ -95,7 +110,9 @@ async def test_get_wallet_raises_for_missing_wallet() -> None:
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("amount", [0, -1])
-async def test_apply_operation_rejects_non_positive_amount(amount: int) -> None:
+async def test_apply_operation_rejects_non_positive_amount(
+    amount: int,
+) -> None:
     service, _ = build_service()
 
     with pytest.raises(ValueError):

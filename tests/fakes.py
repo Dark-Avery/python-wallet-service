@@ -26,7 +26,12 @@ class FakeWalletRepository:
             self._store.clear()
             self._store.update(self._snapshot)
 
-    async def get(self, wallet_uuid: UUID, *, for_update: bool = False) -> Wallet | None:
+    async def get(
+        self,
+        wallet_uuid: UUID,
+        *,
+        for_update: bool = False,
+    ) -> Wallet | None:
         balance = self._store.get(wallet_uuid)
         if balance is None:
             return None
@@ -38,7 +43,12 @@ class FakeWalletRepository:
         self._store[wallet_uuid] = balance
         return Wallet(wallet_uuid=wallet_uuid, balance=balance)
 
-    async def update_balance(self, wallet_uuid: UUID, *, balance: int) -> Wallet:
+    async def update_balance(
+        self,
+        wallet_uuid: UUID,
+        *,
+        balance: int,
+    ) -> Wallet:
         self._store[wallet_uuid] = balance
         return Wallet(wallet_uuid=wallet_uuid, balance=balance)
 

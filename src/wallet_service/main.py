@@ -4,7 +4,10 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
 from wallet_service.api.routes import router as wallet_router
-from wallet_service.domain.errors import InsufficientFundsError, WalletNotFoundError
+from wallet_service.domain.errors import (
+    InsufficientFundsError,
+    WalletNotFoundError,
+)
 
 
 def create_app() -> FastAPI:

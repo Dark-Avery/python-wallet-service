@@ -2,7 +2,12 @@ from __future__ import annotations
 
 from functools import lru_cache
 
-from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.ext.asyncio import (
+    AsyncEngine,
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
+)
 
 from wallet_service.infrastructure.config import get_settings
 
@@ -10,7 +15,11 @@ from wallet_service.infrastructure.config import get_settings
 @lru_cache(maxsize=1)
 def get_engine() -> AsyncEngine:
     settings = get_settings()
-    return create_async_engine(settings.sqlalchemy_database_url, future=True, pool_pre_ping=True)
+    return create_async_engine(
+        settings.sqlalchemy_database_url,
+        future=True,
+        pool_pre_ping=True,
+    )
 
 
 @lru_cache(maxsize=1)

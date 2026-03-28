@@ -12,7 +12,10 @@ from wallet_service.infrastructure.db.models import WalletModel
 
 
 class SQLAlchemyWalletRepository:
-    def __init__(self, session_factory: async_sessionmaker[AsyncSession]) -> None:
+    def __init__(
+        self,
+        session_factory: async_sessionmaker[AsyncSession],
+    ) -> None:
         self._session_factory = session_factory
         self._session: AsyncSession | None = None
 
@@ -37,9 +40,15 @@ class SQLAlchemyWalletRepository:
             await self._session.close()
             self._session = None
 
-    async def get(self, wallet_uuid: UUID, *, for_update: bool = False) -> Wallet | None:
+    async def get(
+        self,
+        wallet_uuid: UUID,
+        *,
+        for_update: bool = False,
+    ) -> Wallet | None:
         session = self._require_session()
-        statement = select(WalletModel).where(WalletModel.wallet_uuid == wallet_uuid)
+        statement = select(WalletModel).where(
+            WalletModel.wallet_uuid == wallet_uuid)
         if for_update:
             statement = statement.with_for_update()
 
@@ -65,7 +74,12 @@ class SQLAlchemyWalletRepository:
         wallet = result.one()
         return Wallet(wallet_uuid=wallet.wallet_uuid, balance=wallet.balance)
 
-    async def update_balance(self, wallet_uuid: UUID, *, balance: int) -> Wallet:
+    async def update_balance(
+        self,
+        wallet_uuid: UUID,
+        *,
+        balance: int,
+    ) -> Wallet:
         session = self._require_session()
         statement = (
             update(WalletModel)
@@ -75,7 +89,10 @@ class SQLAlchemyWalletRepository:
         )
         result = await session.execute(statement)
         updated_wallet = result.one()
-        return Wallet(wallet_uuid=updated_wallet.wallet_uuid, balance=updated_wallet.balance)
+        return Wallet(
+            wallet_uuid=updated_wallet.wallet_uuid,
+            balance=updated_wallet.balance,
+        )
 
     async def commit(self) -> None:
         session = self._require_session()

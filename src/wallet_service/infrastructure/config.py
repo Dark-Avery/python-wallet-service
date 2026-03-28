@@ -8,15 +8,27 @@ from urllib.parse import quote_plus
 
 @dataclass(frozen=True, slots=True)
 class Settings:
-    database_url: str | None = field(default_factory=lambda: os.getenv("DATABASE_URL"))
+    database_url: str | None = field(
+        default_factory=lambda: os.getenv("DATABASE_URL"),
+    )
     db_driver: str = field(
         default_factory=lambda: os.getenv("DB_DRIVER", "postgresql+asyncpg")
     )
-    db_host: str = field(default_factory=lambda: os.getenv("DB_HOST", "localhost"))
-    db_port: int = field(default_factory=lambda: int(os.getenv("DB_PORT", "5432")))
-    db_name: str = field(default_factory=lambda: os.getenv("DB_NAME", "wallet_service"))
-    db_user: str = field(default_factory=lambda: os.getenv("DB_USER", "postgres"))
-    db_password: str = field(default_factory=lambda: os.getenv("DB_PASSWORD", "postgres"))
+    db_host: str = field(
+        default_factory=lambda: os.getenv("DB_HOST", "localhost"),
+    )
+    db_port: int = field(
+        default_factory=lambda: int(os.getenv("DB_PORT", "5432")),
+    )
+    db_name: str = field(
+        default_factory=lambda: os.getenv("DB_NAME", "wallet_service"),
+    )
+    db_user: str = field(
+        default_factory=lambda: os.getenv("DB_USER", "postgres"),
+    )
+    db_password: str = field(
+        default_factory=lambda: os.getenv("DB_PASSWORD", "postgres"),
+    )
 
     @property
     def sqlalchemy_database_url(self) -> str:
@@ -31,7 +43,8 @@ class Settings:
 
         if not url.startswith("postgresql+asyncpg://"):
             raise ValueError(
-                "Wallet service supports only PostgreSQL URLs with the asyncpg driver."
+                "Wallet service supports only PostgreSQL URLs "
+                "with the asyncpg driver."
             )
 
         return url

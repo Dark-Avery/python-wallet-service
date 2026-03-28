@@ -7,7 +7,11 @@ import pytest
 from httpx import AsyncClient
 
 
-async def _insert_wallet(database_url: str, wallet_uuid: UUID, balance: int) -> None:
+async def _insert_wallet(
+    database_url: str,
+    wallet_uuid: UUID,
+    balance: int,
+) -> None:
     connection = await asyncpg.connect(database_url)
     try:
         await connection.execute(

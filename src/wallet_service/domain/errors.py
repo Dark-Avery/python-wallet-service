@@ -8,4 +8,3 @@ class WalletNotFoundError(WalletError):
 
 class InsufficientFundsError(WalletError):
     """Raised when a withdrawal would make the balance negative."""
-

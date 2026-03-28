@@ -13,7 +13,10 @@ from testcontainers.postgres import PostgresContainer
 
 from wallet_service.api.dependencies import get_wallet_service
 from wallet_service.infrastructure.config import get_settings
-from wallet_service.infrastructure.db.session import get_engine, get_session_factory
+from wallet_service.infrastructure.db.session import (
+    get_engine,
+    get_session_factory,
+)
 from wallet_service.main import create_app
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -43,7 +46,8 @@ def postgres_container() -> PostgresContainer:
         check=False,
     )
     if docker_info.returncode != 0:
-        pytest.skip("Docker daemon is not available for PostgreSQL integration tests.")
+        pytest.skip(
+            "Docker daemon is not available for PostgreSQL integration tests.")
 
     with PostgresContainer(
         image=POSTGRES_IMAGE,
