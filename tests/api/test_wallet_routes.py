@@ -18,8 +18,7 @@ def store() -> dict[UUID, int]:
 
 
 @pytest.fixture
-def app(monkeypatch: pytest.MonkeyPatch, store: dict[UUID, int]):
-    monkeypatch.setenv("AUTO_CREATE_SCHEMA", "0")
+def app(store: dict[UUID, int]):
     get_settings.cache_clear()
 
     def repository_factory() -> FakeWalletRepository:
