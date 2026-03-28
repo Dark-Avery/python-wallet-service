@@ -17,7 +17,7 @@ class WalletRepository(Protocol):
     async def get(self, wallet_uuid: UUID, *, for_update: bool = False) -> Wallet | None:
         ...
 
-    async def create(self, wallet_uuid: UUID, *, balance: int) -> Wallet:
+    async def deposit(self, wallet_uuid: UUID, *, amount: int) -> Wallet:
         ...
 
     async def update_balance(self, wallet_uuid: UUID, *, balance: int) -> Wallet:
@@ -28,4 +28,3 @@ class WalletRepository(Protocol):
 
 
 WalletRepositoryFactory = Callable[[], WalletRepository]
-

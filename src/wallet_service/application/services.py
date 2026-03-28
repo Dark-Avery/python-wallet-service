@@ -33,25 +33,24 @@ class WalletService:
             raise ValueError("Amount must be positive.")
 
         async with self._repository_factory() as repository:
+            if operation_type is OperationType.DEPOSIT:
+                updated_wallet = await repository.deposit(wallet_uuid, amount=amount)
+                await repository.commit()
+                return updated_wallet
+
             wallet = await repository.get(wallet_uuid, for_update=True)
 
             if wallet is None:
-                if operation_type is OperationType.WITHDRAW:
-                    raise WalletNotFoundError(f"Wallet {wallet_uuid} was not found.")
+                raise WalletNotFoundError(f"Wallet {wallet_uuid} was not found.")
 
-                created_wallet = await repository.create(wallet_uuid, balance=amount)
-                await repository.commit()
-                return created_wallet
-
-            if operation_type is OperationType.WITHDRAW and wallet.balance < amount:
+            if wallet.balance < amount:
                 raise InsufficientFundsError(
                     f"Wallet {wallet_uuid} does not have enough funds."
                 )
 
-            delta = amount if operation_type is OperationType.DEPOSIT else -amount
             updated_wallet = await repository.update_balance(
                 wallet_uuid,
-                balance=wallet.balance + delta,
+                balance=wallet.balance - amount,
             )
             await repository.commit()
             return updated_wallet

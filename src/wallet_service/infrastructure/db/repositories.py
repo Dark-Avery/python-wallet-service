@@ -4,6 +4,7 @@ from types import TracebackType
 from uuid import UUID
 
 from sqlalchemy import select, update
+from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from wallet_service.domain.entities import Wallet
@@ -49,11 +50,19 @@ class SQLAlchemyWalletRepository:
 
         return Wallet(wallet_uuid=wallet.wallet_uuid, balance=wallet.balance)
 
-    async def create(self, wallet_uuid: UUID, *, balance: int) -> Wallet:
+    async def deposit(self, wallet_uuid: UUID, *, amount: int) -> Wallet:
         session = self._require_session()
-        wallet = WalletModel(wallet_uuid=wallet_uuid, balance=balance)
-        session.add(wallet)
-        await session.flush()
+        statement = (
+            insert(WalletModel)
+            .values(wallet_uuid=wallet_uuid, balance=amount)
+            .on_conflict_do_update(
+                index_elements=[WalletModel.wallet_uuid],
+                set_={"balance": WalletModel.balance + amount},
+            )
+            .returning(WalletModel.wallet_uuid, WalletModel.balance)
+        )
+        result = await session.execute(statement)
+        wallet = result.one()
         return Wallet(wallet_uuid=wallet.wallet_uuid, balance=wallet.balance)
 
     async def update_balance(self, wallet_uuid: UUID, *, balance: int) -> Wallet:

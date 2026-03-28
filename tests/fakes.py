@@ -33,7 +33,8 @@ class FakeWalletRepository:
 
         return Wallet(wallet_uuid=wallet_uuid, balance=balance)
 
-    async def create(self, wallet_uuid: UUID, *, balance: int) -> Wallet:
+    async def deposit(self, wallet_uuid: UUID, *, amount: int) -> Wallet:
+        balance = self._store.get(wallet_uuid, 0) + amount
         self._store[wallet_uuid] = balance
         return Wallet(wallet_uuid=wallet_uuid, balance=balance)
 
