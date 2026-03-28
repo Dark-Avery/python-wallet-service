@@ -18,6 +18,15 @@ REST API для кошельков на `FastAPI + PostgreSQL + SQLAlchemy 2 + A
 - Python `3.12`
 - Docker и `docker compose`
 
+## Локальная установка
+
+Создать виртуальное окружение и установить зависимости для разработки и тестов:
+
+```bash
+python3.12 -m venv .venv
+.venv/bin/pip install -e ".[test]"
+```
+
 ## Запуск
 
 Поднять приложение и PostgreSQL:
@@ -39,16 +48,18 @@ docker compose down -v
 
 ## Миграции
 
+Ниже команды для локального запуска. Они предполагают, что PostgreSQL уже доступен по дефолтному URL из [alembic.ini](/mnt/c/programming/work/it-akad/alembic.ini) или что явно задан `DATABASE_URL`.
+
 Применить миграции вручную:
 
 ```bash
-alembic upgrade head
+.venv/bin/alembic upgrade head
 ```
 
 Откатить миграции:
 
 ```bash
-alembic downgrade base
+.venv/bin/alembic downgrade base
 ```
 
 При запуске контейнера приложения миграции применяются автоматически перед стартом API.
